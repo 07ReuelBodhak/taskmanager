@@ -23,7 +23,7 @@ export const login = async (
     }
     req.session.user = {
       username: user.username as string,
-      email: user.password as string,
+      email: user.email as string,
     };
 
     res.status(201).json({ message: "login successfully" });
@@ -59,4 +59,13 @@ export const signIn = async (
   }
 };
 
-export const logOut = (req: Request, res: Response) => {};
+export const logOut = (req: Request, res: Response, next: NextFunction) => {
+  req.session.destroy((err) => {
+    if (err) {
+      next(new Error("Logout failed"));
+      return;
+    } else {
+      res.status(200).json({ message: "logged out successfully" });
+    }
+  });
+};
