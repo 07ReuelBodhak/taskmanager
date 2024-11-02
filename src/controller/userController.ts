@@ -2,7 +2,36 @@ import { Request, Response, NextFunction } from "express";
 import User, { Iuser } from "../models/User";
 import { validationResult } from "express-validator";
 
-export const login = (req: Request, res: Response, next: NextFunction) => {};
+export const login = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const { username, password } = req.body;
+  try {
+    const user = await User.findOne({ username });
+    if (!user) {
+      res.status(401);
+      next(new Error(`user with username ${username} not found`));
+      return;
+    }
+    const match = await user?.isPasswordCorrect(password);
+    if (!match) {
+      res.status(401);
+      next(new Error("Incorrect password"));
+      return;
+    }
+    req.session.user = {
+      username: user.username as string,
+      email: user.password as string,
+    };
+
+    res.status(201).json({ message: "login successfully" });
+  } catch (err) {
+    console.log(err);
+    next(new Error("unable to login"));
+  }
+};
 
 export const signIn = async (
   req: Request,
@@ -11,9 +40,6 @@ export const signIn = async (
 ) => {
   const { username, password, email } = req.body;
   try {
-    const user = new User({ username, email, password });
-    await user.save();
-    res.status(201).json({ message: "user created successfully" });
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       const errorMessage = errors
@@ -24,6 +50,9 @@ export const signIn = async (
       const error = new Error(`Validation Error : ${errorMessage}`);
       return next(error);
     }
+    const user = new User({ username, email, password });
+    await user.save();
+    res.status(201).json({ message: "user created successfully" });
   } catch (err) {
     console.log(err);
     next(new Error("unable to create user"));

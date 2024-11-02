@@ -5,6 +5,7 @@ export interface Iuser extends Document {
   username: String;
   email: String;
   password: string;
+  isPasswordCorrect(password: string): Promise<boolean>;
 }
 
 const userSchema = new Schema<Iuser>({
@@ -23,6 +24,10 @@ userSchema.pre("save", async function (next) {
   }
   next();
 });
+
+userSchema.methods.isPasswordCorrect = async function (password: string) {
+  return bcrypt.compare(password, this.password);
+};
 
 const User: Model<Iuser> = mongoose.model<Iuser>("User", userSchema);
 
