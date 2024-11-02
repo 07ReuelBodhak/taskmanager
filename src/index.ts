@@ -3,8 +3,9 @@ import express from "express";
 import dotenv from "dotenv";
 import session from "express-session";
 import cookieParser from "cookie-parser";
-import { authHandler } from "./middleware/middleware";
+import { authHandler, errorHandler } from "./middleware/middleware";
 import mongoose from "mongoose";
+import userRouter from "./routes/userRoute";
 
 dotenv.config();
 
@@ -48,6 +49,10 @@ declare module "express-session" {
 
 app.use(authHandler);
 
+app.use("/api/v1/user", userRouter);
+
 app.listen(PORT, () => {
   console.log(`server listening on PORT ${PORT}`);
 });
+
+app.use(errorHandler);

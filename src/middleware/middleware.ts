@@ -11,3 +11,15 @@ export const authHandler = (
   }
   next();
 };
+
+export const errorHandler = (
+  err: Error,
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  console.log(err.stack);
+  const statusCode = res.statusCode || 500;
+  res.status(statusCode);
+  res.json({ Error: err.message || "An unexpected error occurred" });
+};
