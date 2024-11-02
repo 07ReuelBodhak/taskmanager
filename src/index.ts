@@ -4,12 +4,20 @@ import dotenv from "dotenv";
 import session from "express-session";
 import cookieParser from "cookie-parser";
 import { authHandler } from "./middleware/middleware";
+import mongoose from "mongoose";
 
 dotenv.config();
 
 //initialization
 const app = express();
 const PORT = process.env.PORT || 3000;
+const URI = process.env.MONGO_DB_URI as string;
+
+//database
+mongoose
+  .connect(URI, {})
+  .then(() => console.log("database connected successfully"))
+  .catch((err) => console.log("Error : ", err));
 
 //functionality
 app.use(express.json());
