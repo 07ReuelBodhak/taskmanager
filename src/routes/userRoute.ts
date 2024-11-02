@@ -5,8 +5,8 @@ import { body } from "express-validator";
 const router = express.Router();
 
 router
-  .route("/")
   .post(
+    "/signin",
     [
       body("username")
         .isLength({ min: 5 })
@@ -18,7 +18,7 @@ router
     ],
     signIn
   )
-  .post(login)
-  .post(logOut);
+  .post("/login", login)
+  .post("/logout", logOut);
 
 export default router;
