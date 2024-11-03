@@ -3,9 +3,10 @@ import express, { Request, Response } from "express";
 import dotenv from "dotenv";
 import session from "express-session";
 import cookieParser from "cookie-parser";
-import { authHandler, errorHandler } from "./middleware/middleware";
+import { errorHandler } from "./middleware/middleware";
 import mongoose from "mongoose";
 import userRouter from "./routes/userRoute";
+import taskRoutes from "./routes/taskRoutes";
 
 dotenv.config();
 
@@ -48,10 +49,7 @@ declare module "express-session" {
 }
 
 app.use("/api/v1/user", userRouter);
-
-app.get("/api/v1/user", (req: Request, res: Response) => {
-  res.status(200).json({ message: "Working!!!" });
-});
+app.use("/api/v1/task", taskRoutes);
 
 app.listen(PORT, () => {
   console.log(`server listening on PORT ${PORT}`);
